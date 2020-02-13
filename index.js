@@ -1,9 +1,60 @@
+let level = 0;
+const dims = [[8, 10], [14, 18], [20, 24]];
+const cellDims = [10];
+const mines = [10, 40, 99];
+
+document.addEventListener("DOMContentLoaded", function() {
+    setLevel();
+    generateField();
+});
+
+
+
 mineSweep([
     [0, 1, 0, 0],
     [0, 0, 1, 0],
     [0, 1, 0, 1],
     [1, 1, 0, 0],
 ]) // => [[1, 9, 2, 1], [2, 3, 9, 2], [3, 9, 4, 9], [9, 9, 3, 1]]
+
+function setLevel() {
+    switch (document.querySelector('#level').value) {
+        case 'easy':
+            level = 0;
+            break;
+        case 'medium':
+            level = 1;
+            break;
+        case 'hard':
+            level = 2;
+            break;
+        default:
+            level = 0
+    }
+}
+
+function generateField() {
+    document.querySelector('#game').classList.add(`size${level}`);
+    const fieldDiv = document.querySelector('#field');
+    for (let i = 0; i < dims[level][0]; i++) {
+        let rowDiv = document.createElement("div");
+        rowDiv.classList.add('row');
+        for (let j = 0; j < dims[level][1]; j++) {
+            let cellSpan = document.createElement("span");
+            cellSpan.classList.add('field');
+            cellSpan.classList.add(`size${level}`);
+            if ((i + j) % 2 === 0) {
+                cellSpan.classList.add('even');
+                cellSpan.textContent = 'x';
+            } else {
+                cellSpan.classList.add('odd');
+                cellSpan.textContent = 'o';
+            }
+            rowDiv.append(cellSpan);
+        }
+        fieldDiv.append(rowDiv);
+    }
+}
 
 function mineSweeper(src) {
     let target = [];

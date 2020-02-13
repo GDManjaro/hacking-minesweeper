@@ -1,0 +1,70 @@
+div#game.size0 {
+    width: 300px;
+    margin: 50px auto;
+    background-color: #aaaaaa;
+}
+
+span#flag {
+    background-image: url('./icons/flag_icon.png');
+    background-size: contain;
+    float: right;
+    width: 30px;
+    height: 30px;
+}
+
+span#mine-count,
+span#timer {
+    float: right;
+    height: 30px;
+    padding: 0px 10px;
+}
+
+span#clock {
+    background-image: url('./icons/clock_icon.png');
+    background-size: contain;
+    float: right;
+    width: 30px;
+    height: 30px;
+}
+
+div.row {
+    clear: both;
+}
+
+span.field{
+    display: block;
+    float: left;
+    width: 15px;
+    height: 15px;
+}
+
+span.even {
+    background-color: #A7D948;
+}
+
+span.even:hover {
+    background-color: #BFE17C;
+}
+
+span.odd {
+    background-color: #8ECC39;
+}
+
+span.odd:hover {
+    background-color: #B9DD76;
+}
+
+span.size0 {
+    width: 30px;
+    height: 30px;
+}
+
+span.size1 {
+    width: 30px;
+    height: 30px;
+}
+
+span.size2 {
+    width: 30px;
+    height: 30px;
+}
