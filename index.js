@@ -8,13 +8,21 @@ const CELL_DIMS = [45, 30, 30];
 const MINES_COUNT = [10, 40, 99];
 const FONT_COLORS = ['white', 'blue', 'green', 'red', 'purple', 'black', 'maroon', 'gray', 'turquoise'];
 
+// DOM objects
+let fieldDiv, timerDiv, mineCounter;
+
 // TRANS[[]]: the translation matrix to get the eight surrounding cells
 const TRANS = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
 
 let mineField = [[], []];
 let revealed = [[], []];
+let flaggedCells = [];      // an array of flagged cells
 
 document.addEventListener("DOMContentLoaded", function() {
+    fieldDiv = document.querySelector('#field');
+    timerDiv = document.querySelector('#timer');
+    mineCounter = document.querySelector('#mine-count');
+
     setLevel();
     generateFieldDOM();
     // showMines(mineField);
@@ -119,15 +127,14 @@ function generateFieldDOM() {
     document.documentElement.style.setProperty('--cellDim', `${CELL_DIMS[level]}px`);
     document.documentElement.style.setProperty('--gameWidth', `${CELL_DIMS[level] * GRID_DIMS[level][1]}px`);
 
-    document.querySelector('#game').classList.add(`size${level}`);
-    const fieldDiv = document.querySelector('#field');
+    // fieldDiv = document.querySelector('#field');
     for (let i = 0; i < GRID_DIMS[level][0]; i++) {
         for (let j = 0; j < GRID_DIMS[level][1]; j++) {
             let cellDiv = document.createElement("div");
             cellDiv.setAttribute('data-index-y', i);
             cellDiv.setAttribute('data-index-x', j);
             cellDiv.classList.add('cell');
-            cellDiv.classList.add(`size${level}`);
+            // cellDiv.classList.add(`size${level}`);
             if ((i + j) % 2 === 0) {
                 cellDiv.classList.add('even');
             } else {
@@ -144,7 +151,8 @@ function generateFieldDOM() {
 
 function updateClock() {
     clock++;
-    document.querySelector('#timer').textContent = ('00' + (clock)).slice(-3);
+    timerDiv.textContent = ('00' + (clock)).slice(-3);
+    // document.querySelector('#timer').textContent = ('00' + (clock)).slice(-3);
 }
 
 function revealCell(e) {
@@ -194,17 +202,20 @@ function flagCell(e) {
     let y = Number(this.dataset.indexY);
 
     if (revealed[y][x] === false) {
-        let mineCounter = document.querySelector('#mine-count');
-        console.log(mineCounter)
+        //let mineCounter = document.querySelector('#mine-count');
         if (this.classList.contains('flagged')) {
             this.classList.remove('flagged');
             flagsPlanted--;
+            flaggedCells.splice(flaggedCells.findIndex(c => c[0] === y && c[1] === x),1);
             mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
         } else {
             this.classList.add('flagged');
             flagsPlanted++;
+            flaggedCells.push([y, x]);
             mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
-            checkVictory();
+            if (checkVictory()) {
+                alert('You win!!!');
+            }
         }
     }
     
@@ -212,7 +223,10 @@ function flagCell(e) {
 }
 
 function checkVictory() {
-    // check victory after adding a new flag
+    if (flagsPlanted === MINES_COUNT[level]) {
+        return flaggedCells.every(e => mineField[e[0]][e[1]] === 9)
+    }
+    return false;
 }
 
 function isMine(mf, y, x) {
@@ -221,7 +235,6 @@ function isMine(mf, y, x) {
 
 // this function shows the values of all the cells. Used for debugging.
 function showMines(mf) {
-    const fieldDiv = document.querySelector('#field');
     const cells = document.querySelectorAll('div.cell');
     for (let i = 0; i < mf.length; i++) {
         for (let j = 0; j < mf[0].length; j++) {
