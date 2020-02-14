@@ -4,12 +4,12 @@ let clock = 0;
 let flagsPlanted = 0;
 let firstClick = true;
 const GRID_DIMS = [[8, 10], [14, 18], [20, 24]];
-const CELL_DIMS = [45, 30, 30];
+const CELL_DIMS = [45, 35, 30];
 const MINES_COUNT = [10, 40, 99];
 const FONT_COLORS = ['white', 'blue', 'green', 'red', 'purple', 'black', 'maroon', 'gray', 'turquoise'];
 
 // DOM objects
-let fieldDiv, timerDiv, mineCounter;
+let levelMenu, fieldDiv, timerDiv, mineCounter;
 let winScreen, winScore, winBest, replayBtn;
 
 // TRANS[[]]: the translation matrix to get the eight surrounding cells
@@ -20,9 +20,13 @@ let revealed = [[], []];
 let flaggedCells = [];      // an array of flagged cells
 
 document.addEventListener("DOMContentLoaded", function() {
-    fieldDiv = document.querySelector('#field');
+    levelMenu = document.querySelector('#level-menu');
+    levelMenu.addEventListener('input', function(e) {
+        startNewGame(e);
+    }, false);
     timerDiv = document.querySelector('#timer');
     mineCounter = document.querySelector('#mine-count');
+    fieldDiv = document.querySelector('#field');
 
     winScreen = document.querySelector('#final-win');
     winScore = document.querySelector('#score');
@@ -36,11 +40,6 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 function startNewGame(e) {
-    fieldDiv.innerHTML = '';
-    winScreen.style.display = 'none';
-    timerDiv.textContent = '000';
-    mineCounter.textContent = MINES_COUNT[level];
-
     timerId = 0;
     clock = 0;
     flagsPlanted = 0;
@@ -51,11 +50,15 @@ function startNewGame(e) {
     flaggedCells = []; 
 
     setLevel();
+    fieldDiv.innerHTML = '';
+    winScreen.style.display = 'none';
+    timerDiv.textContent = '000';
+    mineCounter.textContent = MINES_COUNT[level];
     generateFieldDOM();
 }
 
 function setLevel() {
-    switch (document.querySelector('#level').value) {
+    switch (levelMenu.value) {
         case 'easy':
             level = 0;
             break;
