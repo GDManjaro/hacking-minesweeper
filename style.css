@@ -1,10 +1,26 @@
-div#game.size0 {
-    width: 300px;
+:root {
+    --rowNum: 8;
+    --colNum: 10;
+    --cellDim: 30px;
+    --gameHeight: 120px;
+    --gameWidth: 300px;
+    --wrapperH: 40px;
+  }
+
+div#game {
+    width: var(--gameWidth);
     margin: 50px auto;
     background-color: #aaaaaa;
 }
 
-span#flag {
+div#header {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    justify-items: stretch;
+    vertical-align: middle;
+}
+
+div#flag {
     background-image: url('./icons/flag_icon.png');
     background-size: contain;
     float: right;
@@ -12,14 +28,12 @@ span#flag {
     height: 30px;
 }
 
-span#mine-count,
-span#timer {
+div#mine-count,
+div#timer {
     float: right;
-    height: 30px;
-    padding: 0px 10px;
 }
 
-span#clock {
+div#clock {
     background-image: url('./icons/clock_icon.png');
     background-size: contain;
     float: right;
@@ -27,44 +41,35 @@ span#clock {
     height: 30px;
 }
 
-div.row {
-    clear: both;
+div#field {
+    display: grid;
+    grid-template-columns: repeat(var(--colNum), var(--cellDim));
+    grid-template-rows: repeat(var(--rowNum), var(--cellDim));
+    justify-items: stretch;
 }
 
-span.field{
+div.cell{
     display: block;
     float: left;
-    width: 15px;
-    height: 15px;
+    text-align: center;
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }
 
-span.even {
+div.even {
     background-color: #A7D948;
 }
 
-span.even:hover {
+div.even:hover {
     background-color: #BFE17C;
 }
 
-span.odd {
+div.odd {
     background-color: #8ECC39;
 }
 
-span.odd:hover {
+div.odd:hover {
     background-color: #B9DD76;
-}
-
-span.size0 {
-    width: 30px;
-    height: 30px;
-}
-
-span.size1 {
-    width: 30px;
-    height: 30px;
-}
-
-span.size2 {
-    width: 30px;
-    height: 30px;
 }
