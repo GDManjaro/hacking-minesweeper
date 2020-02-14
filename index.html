@@ -8,6 +8,7 @@
 </head>
 <body>
     <div id="game">
+        
         <div id="header">
             <div>
                 <select id="level">
@@ -17,9 +18,9 @@
                 </select>
             </div>
             <div id="flag-container">
-                <img src="./icons/flag_icon.png" alt="" srcset="" width="38px">
+                <img src="./icons/flag_icon.png" class="icon">
                 <div id="mine-count">10</div>
-                <img src="./icons/clock_icon.png" alt="" srcset="" width="38px">
+                <img src="./icons/clock_icon.png" class="icon">
                 <div id="timer">000</div>
             </div>
         </div>
@@ -28,6 +29,27 @@
             
         </div>
     </div>
+
+    <div id="final-win">
+        <div id="overlay"></div>
+        <div id="win">
+            <div id="result">
+                <img src="./icons/clock_icon.png" class="icon-lg">
+                <img src="./icons/trophy_icon.png" class="icon-lg">
+                <div id="score">000</div>
+                <div id="best-score">000</div>
+            </div>
+            <img src="./icons/win_screen.png" id="win-img">
+        </div>
+        <div id="lose">
+            <!-- lose -->
+        </div>
+        <div id="replay">
+            Play Again!
+        </div>
+    </div>
+
     <script src="./index.js"></script>
+    
 </body>
 </html>

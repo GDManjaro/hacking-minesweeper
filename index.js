@@ -10,6 +10,7 @@ const FONT_COLORS = ['white', 'blue', 'green', 'red', 'purple', 'black', 'maroon
 
 // DOM objects
 let fieldDiv, timerDiv, mineCounter;
+let winScreen, winScore, winBest, replayBtn;
 
 // TRANS[[]]: the translation matrix to get the eight surrounding cells
 const TRANS = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
@@ -23,10 +24,35 @@ document.addEventListener("DOMContentLoaded", function() {
     timerDiv = document.querySelector('#timer');
     mineCounter = document.querySelector('#mine-count');
 
+    winScreen = document.querySelector('#final-win');
+    winScore = document.querySelector('#score');
+    winBest = document.querySelector('#best-score');
+    replayBtn = document.querySelector('#replay');
+    replayBtn.addEventListener('click', startNewGame);
+
     setLevel();
     generateFieldDOM();
     // showMines(mineField);
 });
+
+function startNewGame(e) {
+    fieldDiv.innerHTML = '';
+    winScreen.style.display = 'none';
+    timerDiv.textContent = '000';
+    mineCounter.textContent = MINES_COUNT[level];
+
+    timerId = 0;
+    clock = 0;
+    flagsPlanted = 0;
+    firstClick = true;
+
+    mineField = [[], []];
+    revealed = [[], []];
+    flaggedCells = []; 
+
+    setLevel();
+    generateFieldDOM();
+}
 
 function setLevel() {
     switch (document.querySelector('#level').value) {
@@ -152,7 +178,6 @@ function generateFieldDOM() {
 function updateClock() {
     clock++;
     timerDiv.textContent = ('00' + (clock)).slice(-3);
-    // document.querySelector('#timer').textContent = ('00' + (clock)).slice(-3);
 }
 
 function revealCell(e) {
@@ -214,7 +239,10 @@ function flagCell(e) {
             flaggedCells.push([y, x]);
             mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
             if (checkVictory()) {
-                alert('You win!!!');
+                clearInterval(timerId);
+                winScreen.style.display = 'block';
+                winScore.textContent = ('00' + (clock)).slice(-3);
+                winBest.textContent = ('00' + (clock)).slice(-3);
             }
         }
     }

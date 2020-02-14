@@ -7,6 +7,12 @@
     --gameWidth: 300px;
 
     font-family: Roboto,Arial,sans-serif;
+    color: white;
+
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }
 
 .blue {
@@ -43,8 +49,11 @@
 
 div#game {
     width: var(--gameWidth);
-    margin: 50px auto;
     background-color: #aaaaaa;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 div#header {
@@ -54,10 +63,15 @@ div#header {
     align-items: center;
     height: 60px;
     background-color: #49752B;
+    position: relative;
 }
 
 div#header > div:first-child {
     text-align: center;
+}
+
+img.icon {
+    width: 38px;
 }
 
 div#flag-container {
@@ -119,14 +133,108 @@ div.cell.flagged {
     background-size: contain;
 }
 
+/* ************************************************** */
 
+#overlay {
+    position: fixed;
+    /* display: block; */
+    display: hidden;
+    width: var(--gameWidth);
+    height: 420px;
+    border-radius: 10px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0,0,0,0.5);
+    z-index: 2;
+}
 
+/* ************************************************** */
 
+#final-win {
+    display: none;
+    /* display: block; */
+}
 
+#win{
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    justify-items: stretch;
 
+    font-size: 24px;
+    font-weight: bolder;
 
+    border-radius: 10px;
+    background-color: #4DC1F9;
+    width: 360px;
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
 
+#result {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 4fr 1fr;
+    justify-items: center;
+    align-items: center;
+}
 
+img.icon-lg {
+    width: 72px;
+}
+
+#win-img {
+    width: 360px;
+    border-radius: 10px;
+}
+
+#lose{
+    display: none;
+    /* display: grid;
+    grid-template-rows: 1fr 1fr;
+    justify-items: stretch;
+
+    font-size: 24px;
+    font-weight: bolder;
+
+    border-radius: 10px;
+    background-color: #4DC1F9;
+    width: 360px;
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); */
+}
+
+/* ************************************************** */
+
+#replay {
+    position: fixed;
+    display: block;
+    width: 200px;
+    height: 50px;
+    border-radius: 10px;
+    left: 50%;
+    top: 69%;
+    transform: translate(-50%, -50%);
+    background-color: #49752B;
+    z-index: 4;
+
+    font-size: 18px;
+    line-height: 50px;
+    text-align: center;
+}
+
+  #replay img {
+      width: 24px;
+      line-height: 50px;
+  }
+
+/* ************************************************** */
 
 .scale-up-bottom {
 	-webkit-animation: scale-up-bottom 0.4s both;
