@@ -6,6 +6,7 @@ let firstClick = true;
 const GRID_DIMS = [[8, 10], [14, 18], [20, 24]];
 const CELL_DIMS = [45, 30, 30];
 const MINES_COUNT = [10, 40, 99];
+const FONT_COLORS = ['white', 'blue', 'green', 'red', 'purple', 'black', 'maroon', 'gray', 'turquoise'];
 
 // TRANS[[]]: the translation matrix to get the eight surrounding cells
 const TRANS = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
@@ -83,7 +84,7 @@ function markMineSurroundings(mf) {
     // return target[[]]: mine field with mine surroundings marked
     let height = mf.length;
     let width = mf[0].length;
-    
+
     let target = [];
     // target = JSON.parse(JSON.stringify(mf));
     for (let i = 0; i < height; i++) {
@@ -168,6 +169,9 @@ function cascadeReveal(y, x) {
     cell.classList.add('revealed');
     if (mineField[y][x] > 0) {
         cell.textContent = mineField[y][x];
+        if (mineField[y][x] > 1) {
+            cell.classList.add(FONT_COLORS[mineField[y][x]]);
+        }
     } else {
         for (let i = 0; i < TRANS.length; i++) {
             if (isExpandable(y + TRANS[i][0], x + TRANS[i][1])) {
