@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
 :root {
     --rowNum: 8;
     --colNum: 10;
@@ -13,30 +15,25 @@ div#game {
 
 div#header {
     display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: stretch;
+    align-items: center;
+    height: 60px;
+    background-color: #49752B;
+}
+
+div#header > div:first-child {
+    text-align: center;
+}
+
+div#flag-container {
+    display: grid;
     grid-template-columns: repeat(4, 1fr);
     justify-items: stretch;
-    vertical-align: middle;
-}
-
-div#mine-count,
-div#timer {
-    float: right;
-}
-
-div#flag {
-    background-image: url('./icons/flag_icon.png');
-    background-size: contain;
-    float: right;
-    width: 30px;
-    height: 30px;
-}
-
-div#clock {
-    background-image: url('./icons/clock_icon.png');
-    background-size: contain;
-    float: right;
-    width: 30px;
-    height: 30px;
+    align-items: center;
+    font-family: Roboto,Arial,sans-serif;
+    color: white;
+    font-size: 20px;
 }
 
 div#field {

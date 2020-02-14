@@ -1,6 +1,6 @@
 let level = 0;
 const GRID_DIMS = [[8, 10], [14, 18], [20, 24]];
-const CELL_DIMS = [30, 30, 30];
+const CELL_DIMS = [45, 30, 30];
 const MINES_COUNT = [10, 40, 99];
 
 // TRANS[[]]: the translation matrix to get the eight surrounding cells
@@ -103,7 +103,7 @@ function generateFieldDOM() {
     document.documentElement.style.setProperty('--rowNum', GRID_DIMS[level][0]);
     document.documentElement.style.setProperty('--colNum', GRID_DIMS[level][1]);
     document.documentElement.style.setProperty('--cellDim', `${CELL_DIMS[level]}px`);
-    document.documentElement.style.setProperty('--gameWidth', '300px');
+    document.documentElement.style.setProperty('--gameWidth', `${CELL_DIMS[level] * GRID_DIMS[level][1]}px`);
 
     document.querySelector('#game').classList.add(`size${level}`);
     const fieldDiv = document.querySelector('#field');
