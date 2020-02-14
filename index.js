@@ -2,7 +2,12 @@ let level = 0;
 const GRID_DIMS = [[8, 10], [14, 18], [20, 24]];
 const CELL_DIMS = [30, 30, 30];
 const MINES_COUNT = [10, 40, 99];
+
+// TRANS[[]]: the translation matrix to get the eight surrounding cells
+const TRANS = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+
 let mineField = [[], []];
+let revealed = [[], []];
 
 document.addEventListener("DOMContentLoaded", function() {
     setLevel();
@@ -25,8 +30,17 @@ function setLevel() {
             level = 0
     }
     // generate a new mine field
+    revealed = resetRevealed(GRID_DIMS[level][1], GRID_DIMS[level][0]);
     mineField = generateMines(GRID_DIMS[level][1], GRID_DIMS[level][0], MINES_COUNT[level]);
     mineField = markMineSurroundings(mineField);
+}
+
+function resetRevealed(width, height) {
+    let r = [];
+    for (let i = 0; i < height; i++) {
+        r[i] = Array(width).fill(false);
+    }
+    return r;
 }
 
 function generateMines(width, height, mc) {
@@ -57,9 +71,6 @@ function markMineSurroundings(mf) {
     // return target[[]]: mine field with mine surroundings marked
     let height = mf.length;
     let width = mf[0].length;
-
-    // trans: the translation matrix to get the eight surrounding cells
-    const trans = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
     
     let target = [];
     for (let i = 0; i < height; i++) {
@@ -76,9 +87,9 @@ function markMineSurroundings(mf) {
         for (let j = 0; j < width; j++) {
             if (mf[i][j] === 1) {
                 target[i][j] = 9;
-                for (let k = 0; k < trans.length; k++) {
-                    if (isValid(i + trans[k][0], j + trans[k][1])) {
-                        target[i + trans[k][0]][j + trans[k][1]]++;
+                for (let k = 0; k < TRANS.length; k++) {
+                    if (isValid(i + TRANS[k][0], j + TRANS[k][1])) {
+                        target[i + TRANS[k][0]][j + TRANS[k][1]]++;
                     }
                 }
             }
@@ -105,23 +116,84 @@ function generateFieldDOM() {
             cellDiv.classList.add(`size${level}`);
             if ((i + j) % 2 === 0) {
                 cellDiv.classList.add('even');
-                cellDiv.textContent = 'x';
             } else {
                 cellDiv.classList.add('odd');
-                cellDiv.textContent = 'o';
             }
+            cellDiv.addEventListener('click', revealCell);
+            cellDiv.addEventListener('contextmenu', flagCell, false);
+            
             fieldDiv.append(cellDiv);
         }
         
     }
 }
 
+function revealCell(e) {
+    let x = Number(this.dataset.indexX);
+    let y = Number(this.dataset.indexY);
+    if (revealed[y][x] === false && !this.classList.contains('flagged')) {
+        if (!isMine(mineField, y, x)) {
+            cascadeReveal(y, x);
+        } else {
+            alert('You lose!')
+        }
+    }
+}
+
+function cascadeReveal(y, x) {
+    revealed[y][x] = true;
+    let cell = document.querySelector(`[data-index-y='${y}'][data-index-x='${x}']`)
+    cell.classList.add('revealed');
+    if (mineField[y][x] > 0) {
+        cell.textContent = mineField[y][x];
+    } else {
+        for (let i = 0; i < TRANS.length; i++) {
+            if (isExpandable(y + TRANS[i][0], x + TRANS[i][1])) {
+                cascadeReveal(y + TRANS[i][0], x + TRANS[i][1]);
+            }
+        }
+    }
+
+    // isExpandable(): takes coordinates of a cell (row and column).
+    // Returns true if the coordinates fall within the field and the cell is neither revealed nor a mine.
+    function isExpandable(y, x) {
+        return x >= 0 && x < GRID_DIMS[level][1] && y >= 0 && y < GRID_DIMS[level][0] && !revealed[y][x] && !isMine(mineField, y, x);
+    }
+}
+
+function flagCell(e) {
+    e.preventDefault();
+
+    let x = Number(this.dataset.indexX);
+    let y = Number(this.dataset.indexY);
+
+    if (revealed[y][x] === false) {
+        if (this.classList.contains('flagged')) {
+            this.classList.remove('flagged');
+        } else {
+            this.classList.add('flagged');
+            checkVictory();
+        }
+    }
+    
+    return false;
+}
+
+function checkVictory() {
+    // check victory after adding a new flag
+}
+
+function isMine(mf, y, x) {
+    return mf[y][x] === 9 ? true : false;
+}
+
+// this function shows the values of all the cells. Used for debugging.
 function showMines(mf) {
     const fieldDiv = document.querySelector('#field');
     const cells = document.querySelectorAll('div.cell');
     for (let i = 0; i < mf.length; i++) {
         for (let j = 0; j < mf[0].length; j++) {
-            cells[i * mf[0].length + j].textContent = mf[i][j] === 9 ? 'X' : mf[i][j];
+            cells[i * mf[0].length + j].textContent = isMine(mf, i, j) ? 'X' : mf[i][j];
         }
     }
 }

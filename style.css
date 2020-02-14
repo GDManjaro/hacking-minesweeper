@@ -2,9 +2,7 @@
     --rowNum: 8;
     --colNum: 10;
     --cellDim: 30px;
-    --gameHeight: 120px;
     --gameWidth: 300px;
-    --wrapperH: 40px;
   }
 
 div#game {
@@ -20,17 +18,17 @@ div#header {
     vertical-align: middle;
 }
 
+div#mine-count,
+div#timer {
+    float: right;
+}
+
 div#flag {
     background-image: url('./icons/flag_icon.png');
     background-size: contain;
     float: right;
     width: 30px;
     height: 30px;
-}
-
-div#mine-count,
-div#timer {
-    float: right;
 }
 
 div#clock {
@@ -66,10 +64,23 @@ div.even:hover {
     background-color: #BFE17C;
 }
 
+div.even.revealed {
+    background-color: #D7B899;
+}
+
 div.odd {
     background-color: #8ECC39;
 }
 
 div.odd:hover {
     background-color: #B9DD76;
+}
+
+div.odd.revealed {
+    background-color: #E5C29F;
+}
+
+div.cell.flagged {
+    background-image: url('./icons/flag_icon.png');
+    background-size: contain;
 }
