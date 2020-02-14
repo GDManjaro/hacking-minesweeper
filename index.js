@@ -1,4 +1,6 @@
 let level = 0;
+let timerId = 0;
+let firstClick = true;
 const GRID_DIMS = [[8, 10], [14, 18], [20, 24]];
 const CELL_DIMS = [45, 30, 30];
 const MINES_COUNT = [10, 40, 99];
@@ -28,6 +30,12 @@ function setLevel() {
             break;
         default:
             level = 0
+    }
+    
+    // set up a new game
+    firstClick = true;
+    if (timerId !== 0) {
+        clearInterval(timerId);
     }
     // generate a new mine field
     revealed = resetRevealed(GRID_DIMS[level][1], GRID_DIMS[level][0]);
@@ -128,7 +136,17 @@ function generateFieldDOM() {
     }
 }
 
+function updateClock() {
+    let timer = Number(document.querySelector('#timer').textContent);
+    console.log(timer);
+    document.querySelector('#timer').textContent = ('00' + (timer + 1)).slice(-3);
+}
+
 function revealCell(e) {
+    if (firstClick) {
+        firstClick = false;
+        timerId = setInterval(updateClock, 1000);
+    }
     let x = Number(this.dataset.indexX);
     let y = Number(this.dataset.indexY);
     if (revealed[y][x] === false && !this.classList.contains('flagged')) {
