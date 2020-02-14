@@ -34,27 +34,16 @@ document.addEventListener("DOMContentLoaded", function() {
     replayBtn = document.querySelector('#replay');
     replayBtn.addEventListener('click', startNewGame);
 
-    setLevel();
-    generateFieldDOM();
+    startNewGame();
     // showMines(mineField);
 });
 
-function startNewGame(e) {
-    timerId = 0;
-    clock = 0;
-    flagsPlanted = 0;
-    firstClick = true;
-
-    mineField = [[], []];
-    revealed = [[], []];
-    flaggedCells = []; 
-
+function startNewGame(event) {
     setLevel();
-    fieldDiv.innerHTML = '';
-    winScreen.style.display = 'none';
+    generateFieldDOM();
     timerDiv.textContent = '000';
     mineCounter.textContent = MINES_COUNT[level];
-    generateFieldDOM();
+    winScreen.style.display = 'none';
 }
 
 function setLevel() {
@@ -75,6 +64,7 @@ function setLevel() {
     // set up a new game
     firstClick = true;
     flagsPlanted = 0;
+    flaggedCells = [];
     clock = 0;
     if (timerId !== 0) {
         clearInterval(timerId);
@@ -156,7 +146,7 @@ function generateFieldDOM() {
     document.documentElement.style.setProperty('--cellDim', `${CELL_DIMS[level]}px`);
     document.documentElement.style.setProperty('--gameWidth', `${CELL_DIMS[level] * GRID_DIMS[level][1]}px`);
 
-    // fieldDiv = document.querySelector('#field');
+    fieldDiv.innerHTML = '';
     for (let i = 0; i < GRID_DIMS[level][0]; i++) {
         for (let j = 0; j < GRID_DIMS[level][1]; j++) {
             let cellDiv = document.createElement("div");
@@ -174,7 +164,6 @@ function generateFieldDOM() {
             
             fieldDiv.append(cellDiv);
         }
-        
     }
 }
 
@@ -249,12 +238,13 @@ function flagCell(e) {
             }
         }
     }
-    
+    // should return false to prevent the default context menu
     return false;
 }
 
 function checkVictory() {
     if (flagsPlanted === MINES_COUNT[level]) {
+        // check if all the coordinates stored in flaggedCells represent cell with mines
         return flaggedCells.every(e => mineField[e[0]][e[1]] === 9)
     }
     return false;
