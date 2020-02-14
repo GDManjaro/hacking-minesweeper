@@ -1,5 +1,7 @@
 let level = 0;
 let timerId = 0;
+let clock = 0;
+let flagsPlanted = 0;
 let firstClick = true;
 const GRID_DIMS = [[8, 10], [14, 18], [20, 24]];
 const CELL_DIMS = [45, 30, 30];
@@ -34,6 +36,8 @@ function setLevel() {
     
     // set up a new game
     firstClick = true;
+    flagsPlanted = 0;
+    clock = 0;
     if (timerId !== 0) {
         clearInterval(timerId);
     }
@@ -81,10 +85,11 @@ function markMineSurroundings(mf) {
     let width = mf[0].length;
     
     let target = [];
+    // target = JSON.parse(JSON.stringify(mf));
     for (let i = 0; i < height; i++) {
         target[i] = Array(width).fill(0);
     }
-    
+
     // isValid: takes coordinates of a cell (row and column).
     // Returns true if the coordinates fall within the field and the cell is not a mine.
     function isValid(y, x) {
@@ -137,9 +142,8 @@ function generateFieldDOM() {
 }
 
 function updateClock() {
-    let timer = Number(document.querySelector('#timer').textContent);
-    console.log(timer);
-    document.querySelector('#timer').textContent = ('00' + (timer + 1)).slice(-3);
+    clock++;
+    document.querySelector('#timer').textContent = ('00' + (clock)).slice(-3);
 }
 
 function revealCell(e) {
@@ -186,10 +190,16 @@ function flagCell(e) {
     let y = Number(this.dataset.indexY);
 
     if (revealed[y][x] === false) {
+        let mineCounter = document.querySelector('#mine-count');
+        console.log(mineCounter)
         if (this.classList.contains('flagged')) {
             this.classList.remove('flagged');
+            flagsPlanted--;
+            mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
         } else {
             this.classList.add('flagged');
+            flagsPlanted++;
+            mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
             checkVictory();
         }
     }
