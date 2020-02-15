@@ -3,7 +3,7 @@ let timerId = 0;
 let clock = 0;
 let flagsPlanted = 0;
 let firstClick = true;
-let bestScores = [Infinity, Infinity, Infinity];
+let bestScores = [9999999, 9999999, 9999999];
 const GRID_DIMS = [[8, 10], [14, 18], [20, 24]];
 const CELL_DIMS = [45, 35, 30];
 const MINES_COUNT = [10, 40, 99];
@@ -188,15 +188,7 @@ function revealCell(e) {
             cascadeReveal(y, x);
         } else {
             // You lost!!!
-            // alert('You lost!')
-            clearInterval(timerId);
-            // TODO: reveal mines
-            resultImg.setAttribute('src', './icons/lose_screen.png');
-            scoreDiv.textContent = '— — —';
-            bestDiv.textContent = bestScores[level] === Infinity ? '— — —' : ('00' + (bestScores[level])).slice(-3);
-            document.documentElement.style.setProperty('--gameWidth', `${gameDiv.offsetWidth}px`);
-            document.documentElement.style.setProperty('--gameHeight', `${gameDiv.offsetHeight}px`);
-            finalScreen.style.display = 'block';            
+            finishRound(false);
         }
     }
 }
@@ -251,22 +243,33 @@ function flagCell(e) {
             mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
             if (checkVictory()) {
                 // You won!!!
-                clearInterval(timerId);
-                resultImg.setAttribute('src', './icons/win_screen.png');
-                scoreDiv.textContent = ('00' + (clock)).slice(-3);
-                if (clock < bestScores[level]) {
-                    bestScores[level] = clock;
-                    localStorage.setItem('minesweeperBestScores', JSON.stringify(bestScores));
-                }
-                bestDiv.textContent = ('00' + (bestScores[level])).slice(-3);
-                document.documentElement.style.setProperty('--gameWidth', `${gameDiv.offsetWidth}px`);
-                document.documentElement.style.setProperty('--gameHeight', `${gameDiv.offsetHeight}px`);
-                finalScreen.style.display = 'block';
+                finishRound(true);
             }
         }
     }
     // should return false to prevent the default context menu
     return false;
+}
+
+function finishRound(won) {
+    clearInterval(timerId);
+    if (won === true) {
+        resultImg.setAttribute('src', './icons/win_screen.png');
+        scoreDiv.textContent = ('00' + (clock)).slice(-3);
+        if (clock < bestScores[level]) {
+            bestScores[level] = clock;
+            localStorage.setItem('minesweeperBestScores', JSON.stringify(bestScores));
+        }
+        bestDiv.textContent = ('00' + (bestScores[level])).slice(-3);
+    } else {
+        // TODO: reveal mines
+        resultImg.setAttribute('src', './icons/lose_screen.png');
+        scoreDiv.textContent = '— — —';
+        bestDiv.textContent = bestScores[level] === 9999999 ? '— — —' : ('00' + (bestScores[level])).slice(-3);
+    }
+    document.documentElement.style.setProperty('--gameWidth', `${gameDiv.offsetWidth}px`);
+    document.documentElement.style.setProperty('--gameHeight', `${gameDiv.offsetHeight}px`);
+    finalScreen.style.display = 'block';
 }
 
 function checkVictory() {
@@ -281,6 +284,15 @@ function isMine(mf, y, x) {
     return mf[y][x] === 9 ? true : false;
 }
 
+function initBestScores() {
+    const scoreFromLocalStorage = JSON.parse(localStorage.getItem('minesweeperBestScores'));
+    if (Array.isArray(scoreFromLocalStorage)) {
+        return scoreFromLocalStorage;
+    } else {
+        return [9999999, 9999999, 9999999];
+    }
+}
+
 // this function shows the values of all the cells. Used for debugging.
 function showMines(mf) {
     const cells = document.querySelectorAll('div.cell');
@@ -290,13 +302,3 @@ function showMines(mf) {
         }
     }
 }
-
-function initBestScores() {
-    const scoreFromLocalStorage = JSON.parse(localStorage.getItem('minesweeperBestScores'));
-    if (Array.isArray(scoreFromLocalStorage)) {
-        return scoreFromLocalStorage;
-    } else {
-        return [Infinity, Infinity, Infinity];
-    }
-}
-
