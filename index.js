@@ -11,7 +11,7 @@ const FONT_COLORS = ['white', 'blue', 'green', 'red', 'purple', 'black', 'maroon
 
 // DOM objects
 let levelMenu, fieldDiv, timerDiv, mineCounter;
-let finalScreen, resultImg, scoreDiv, bestDiv, replayBtn;
+let gameDiv, finalScreen, resultImg, scoreDiv, bestDiv, replayBtn;
 
 // TRANS[[]]: the translation matrix to get the eight surrounding cells
 const TRANS = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
@@ -22,6 +22,7 @@ let flaggedCells = [];      // an array of flagged cells
 
 document.addEventListener("DOMContentLoaded", function() {
     bestScores = initBestScores();
+    gameDiv = document.querySelector('#game');
     levelMenu = document.querySelector('#level-menu');
     levelMenu.addEventListener('input', function(e) {
         startNewGame(e);
@@ -190,9 +191,11 @@ function revealCell(e) {
             // alert('You lost!')
             clearInterval(timerId);
             // TODO: reveal mines
-            resultImg.setAttribute('src', './icons/win_screen.png');
+            resultImg.setAttribute('src', './icons/lose_screen.png');
             scoreDiv.textContent = '— — —';
             bestDiv.textContent = bestScores[level] === Infinity ? '— — —' : ('00' + (bestScores[level])).slice(-3);
+            document.documentElement.style.setProperty('--gameWidth', `${gameDiv.offsetWidth}px`);
+            document.documentElement.style.setProperty('--gameHeight', `${gameDiv.offsetHeight}px`);
             finalScreen.style.display = 'block';            
         }
     }
@@ -212,6 +215,8 @@ function cascadeReveal(y, x) {
             cell.classList.add(FONT_COLORS[mineField[y][x]]);
         }
     } else {
+        fieldDiv.classList.add('shake');
+        setTimeout(function(){ fieldDiv.classList.remove('shake') }, 300);
         for (let i = 0; i < TRANS.length; i++) {
             if (isExpandable(y + TRANS[i][0], x + TRANS[i][1])) {
                 cascadeReveal(y + TRANS[i][0], x + TRANS[i][1]);
@@ -254,6 +259,8 @@ function flagCell(e) {
                     localStorage.setItem('minesweeperBestScores', JSON.stringify(bestScores));
                 }
                 bestDiv.textContent = ('00' + (bestScores[level])).slice(-3);
+                document.documentElement.style.setProperty('--gameWidth', `${gameDiv.offsetWidth}px`);
+                document.documentElement.style.setProperty('--gameHeight', `${gameDiv.offsetHeight}px`);
                 finalScreen.style.display = 'block';
             }
         }

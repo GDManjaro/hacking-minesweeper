@@ -5,6 +5,7 @@
     --colNum: 10;
     --cellDim: 30px;
     --gameWidth: 300px;
+    --gameHeight: 420px;
 
     font-family: Roboto,Arial,sans-serif;
     color: white;
@@ -13,6 +14,12 @@
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none; /* Standard */
+}
+
+body {
+    overflow-x: scroll;
+
+    overflow: scroll;
 }
 
 .blue {
@@ -54,13 +61,13 @@ div#game {
     transform: translate(-50%, -50%);
     width: var(--gameWidth);
     background-color: #aaaaaa;
+    /* margin: 0 auto; */
 }
 
 div#header {
     position: relative;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    justify-items: stretch;
     align-items: center;
     height: 60px;
     background-color: #49752B;
@@ -77,7 +84,6 @@ img.icon {
 div#flag-container {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    justify-items: stretch;
     align-items: center;
     color: white;
     font-size: 20px;
@@ -87,7 +93,24 @@ div#field {
     display: grid;
     grid-template-columns: repeat(var(--colNum), var(--cellDim));
     grid-template-rows: repeat(var(--rowNum), var(--cellDim));
-    justify-items: stretch;
+}
+
+div#field.shake {
+    animation: shake 0.3s;
+}
+  
+  @keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
 
 div.cell{
@@ -130,17 +153,20 @@ div.cell.flagged {
 /* ************************************************** */
 
 #overlay {
-    position: fixed;
-    /* display: block; */
+    /* position: fixed; */
+    position: relative;
+    display: block;
     display: hidden;
+    position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     width: var(--gameWidth);
-    height: 420px;
+    height: var(--gameHeight);
     border-radius: 10px;
     background-color: rgba(0,0,0,0.5);
     z-index: 2;
+    /* margin: 0 auto; */
 }
 
 /* ************************************************** */
@@ -153,7 +179,6 @@ div.cell.flagged {
 #board{
     display: grid;
     grid-template-rows: 1fr 1fr;
-    justify-items: stretch;
 
     position: absolute;
     left: 50%;
@@ -190,12 +215,13 @@ img.icon-lg {
 
 #replay {
     position: fixed;
-    display: block;
+    /* display: block; */
     left: 50%;
-    top: 69%;
+    top: 58%;
     transform: translate(-50%, -50%);
     width: 200px;
     height: 50px;
+    /* margin: 0 auto; */
     
     line-height: 50px;
     text-align: center;
@@ -205,7 +231,10 @@ img.icon-lg {
     z-index: 4;
 }
 
-#replay img {
-    width: 24px;
-    line-height: 50px;
+#replay:hover {
+    cursor: pointer;
+    background-color: rgb(118, 192, 69);
 }
+
+/* ****************** */
+
