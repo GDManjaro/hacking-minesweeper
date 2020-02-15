@@ -3,6 +3,7 @@ let timerId = 0;
 let clock = 0;
 let flagsPlanted = 0;
 let firstClick = true;
+let bestScores = [Infinity, Infinity, Infinity];
 const GRID_DIMS = [[8, 10], [14, 18], [20, 24]];
 const CELL_DIMS = [45, 35, 30];
 const MINES_COUNT = [10, 40, 99];
@@ -20,6 +21,7 @@ let revealed = [[], []];
 let flaggedCells = [];      // an array of flagged cells
 
 document.addEventListener("DOMContentLoaded", function() {
+    bestScores = initBestScores();
     levelMenu = document.querySelector('#level-menu');
     levelMenu.addEventListener('input', function(e) {
         startNewGame(e);
@@ -190,7 +192,7 @@ function revealCell(e) {
             // TODO: reveal mines
             resultImg.setAttribute('src', './icons/win_screen.png');
             scoreDiv.textContent = '— — —';
-            bestDiv.textContent = ('00' + (clock)).slice(-3);
+            bestDiv.textContent = bestScores[level] === Infinity ? '— — —' : ('00' + (bestScores[level])).slice(-3);
             finalScreen.style.display = 'block';            
         }
     }
@@ -247,7 +249,11 @@ function flagCell(e) {
                 clearInterval(timerId);
                 resultImg.setAttribute('src', './icons/win_screen.png');
                 scoreDiv.textContent = ('00' + (clock)).slice(-3);
-                bestDiv.textContent = ('00' + (clock)).slice(-3);
+                if (clock < bestScores[level]) {
+                    bestScores[level] = clock;
+                    localStorage.setItem('minesweeperBestScores', JSON.stringify(bestScores));
+                }
+                bestDiv.textContent = ('00' + (bestScores[level])).slice(-3);
                 finalScreen.style.display = 'block';
             }
         }
@@ -277,3 +283,13 @@ function showMines(mf) {
         }
     }
 }
+
+function initBestScores() {
+    const scoreFromLocalStorage = JSON.parse(localStorage.getItem('minesweeperBestScores'));
+    if (Array.isArray(scoreFromLocalStorage)) {
+        return scoreFromLocalStorage;
+    } else {
+        return [Infinity, Infinity, Infinity];
+    }
+}
+
