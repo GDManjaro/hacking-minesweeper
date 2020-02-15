@@ -48,22 +48,22 @@
 }
 
 div#game {
-    width: var(--gameWidth);
-    background-color: #aaaaaa;
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    width: var(--gameWidth);
+    background-color: #aaaaaa;
 }
 
 div#header {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     justify-items: stretch;
     align-items: center;
     height: 60px;
     background-color: #49752B;
-    position: relative;
 }
 
 div#header > div:first-child {
@@ -91,17 +91,11 @@ div#field {
 }
 
 div.cell{
-    /* display: block;
-    float: left; */
     text-align: center;
     line-height: var(--cellDim);
     font-size: 28px;
     font-weight: bolder;
     color: #1975D2;
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
 }
 
 div.even {
@@ -139,39 +133,40 @@ div.cell.flagged {
     position: fixed;
     /* display: block; */
     display: hidden;
-    width: var(--gameWidth);
-    height: 420px;
-    border-radius: 10px;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    width: var(--gameWidth);
+    height: 420px;
+    border-radius: 10px;
     background-color: rgba(0,0,0,0.5);
     z-index: 2;
 }
 
 /* ************************************************** */
 
-#final-win {
+#final-screen {
     display: none;
     /* display: block; */
 }
 
-#win{
+#board{
     display: grid;
     grid-template-rows: 1fr 1fr;
     justify-items: stretch;
 
-    font-size: 24px;
-    font-weight: bolder;
-
-    border-radius: 10px;
-    background-color: #4DC1F9;
-    width: 360px;
     position: absolute;
-    z-index: 3;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    width: 360px;
+
+    border-radius: 10px;
+    background-color: #4DC1F9;
+    font-size: 24px;
+    font-weight: bolder;
+    
+    z-index: 3;
 }
 
 #result {
@@ -186,28 +181,9 @@ img.icon-lg {
     width: 72px;
 }
 
-#win-img {
+#result-img {
     width: 360px;
     border-radius: 10px;
-}
-
-#lose{
-    display: none;
-    /* display: grid;
-    grid-template-rows: 1fr 1fr;
-    justify-items: stretch;
-
-    font-size: 24px;
-    font-weight: bolder;
-
-    border-radius: 10px;
-    background-color: #4DC1F9;
-    width: 360px;
-    position: absolute;
-    z-index: 3;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%); */
 }
 
 /* ************************************************** */
@@ -215,18 +191,18 @@ img.icon-lg {
 #replay {
     position: fixed;
     display: block;
-    width: 200px;
-    height: 50px;
-    border-radius: 10px;
     left: 50%;
     top: 69%;
     transform: translate(-50%, -50%);
-    background-color: #49752B;
-    z-index: 4;
-
-    font-size: 18px;
+    width: 200px;
+    height: 50px;
+    
     line-height: 50px;
     text-align: center;
+    background-color: #49752B;
+    border-radius: 10px;
+    font-size: 18px;
+    z-index: 4;
 }
 
 #replay img {

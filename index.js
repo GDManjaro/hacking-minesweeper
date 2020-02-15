@@ -10,7 +10,7 @@ const FONT_COLORS = ['white', 'blue', 'green', 'red', 'purple', 'black', 'maroon
 
 // DOM objects
 let levelMenu, fieldDiv, timerDiv, mineCounter;
-let winScreen, winScore, winBest, replayBtn;
+let finalScreen, resultImg, scoreDiv, bestDiv, replayBtn;
 
 // TRANS[[]]: the translation matrix to get the eight surrounding cells
 const TRANS = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
@@ -28,9 +28,10 @@ document.addEventListener("DOMContentLoaded", function() {
     mineCounter = document.querySelector('#mine-count');
     fieldDiv = document.querySelector('#field');
 
-    winScreen = document.querySelector('#final-win');
-    winScore = document.querySelector('#score');
-    winBest = document.querySelector('#best-score');
+    finalScreen = document.querySelector('#final-screen');
+    resultImg = document.querySelector('#result-img');
+    scoreDiv = document.querySelector('#score');
+    bestDiv = document.querySelector('#best-score');
     replayBtn = document.querySelector('#replay');
     replayBtn.addEventListener('click', startNewGame);
 
@@ -43,7 +44,7 @@ function startNewGame(event) {
     generateFieldDOM();
     timerDiv.textContent = '000';
     mineCounter.textContent = MINES_COUNT[level];
-    winScreen.style.display = 'none';
+    finalScreen.style.display = 'none';
 }
 
 function setLevel() {
@@ -183,9 +184,20 @@ function revealCell(e) {
         if (!isMine(mineField, y, x)) {
             cascadeReveal(y, x);
         } else {
-            alert('You lose!')
+            // You lost!!!
+            // alert('You lost!')
+            clearInterval(timerId);
+            // TODO: reveal mines
+            resultImg.setAttribute('src', './icons/win_screen.png');
+            scoreDiv.textContent = '— — —';
+            bestDiv.textContent = ('00' + (clock)).slice(-3);
+            finalScreen.style.display = 'block';            
         }
     }
+}
+
+function revealMines() {
+    // reveal mines after lost
 }
 
 function cascadeReveal(y, x) {
@@ -231,10 +243,12 @@ function flagCell(e) {
             flaggedCells.push([y, x]);
             mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
             if (checkVictory()) {
+                // You won!!!
                 clearInterval(timerId);
-                winScreen.style.display = 'block';
-                winScore.textContent = ('00' + (clock)).slice(-3);
-                winBest.textContent = ('00' + (clock)).slice(-3);
+                resultImg.setAttribute('src', './icons/win_screen.png');
+                scoreDiv.textContent = ('00' + (clock)).slice(-3);
+                bestDiv.textContent = ('00' + (clock)).slice(-3);
+                finalScreen.style.display = 'block';
             }
         }
     }
