@@ -1,24 +1,28 @@
-let level = 0;
-let timerId = 0;
-let clock = 0;
-let flagsPlanted = 0;
-let firstClick = true;
-let bestScores = [9999999, 9999999, 9999999];
-const GRID_DIMS = [[8, 10], [14, 18], [20, 24]];
-const CELL_DIMS = [45, 35, 30];
-const MINES_COUNT = [10, 40, 99];
-const FONT_COLORS = ['white', 'blue', 'green', 'red', 'purple', 'black', 'maroon', 'gray', 'turquoise'];
+// Consts
+const LAND_MARKER = 0;              // indicator of empty cell in the mine field
+const MINE_MARKER = 9;              // indicator of a mine cell in the mine field
+const GRID_DIMS = [[8, 10], [14, 18], [20, 24]];    // field dimensions for each level [rows, columns]
+const CELL_DIMS = [45, 35, 30];     // cell dimensions for each level
+const MINES_COUNT = [10, 40, 99];   // number of mines in each level
+const TRANS = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];   // the translation matrix to get the eight surrounding cells
+const NUM_COLORS = ['white', 'blue', 'green', 'red', 'purple', 'black', 'maroon', 'gray', 'turquoise'];
+const MINE_COLORS = [['#DA3236', '#8E2123'], ['#F4840D', '#9F5607'], ['#F4C20E', '#9F7E09'], ['#008744', '#01582C'], ['#48E6F1', '#2F969D'], ['#4785ED', '#2F569A'], ['#ED44B5', '#9A2C76']];   // colors of mines shown when game lost
+
+let level = 0;                      // game level: easy, medium, hard
+let clock = 0;                      // game clock
+let timerId = 0;                    // to be used with setInterval() to run the clock
+let flagsPlanted = 0;               // number of flags planted by player
+let firstClick = true;              // game has not started yet
+let bestScores = [9999999, 9999999, 9999999];   // best time in each level
+
+let mineField = [];     // 2D array: values: 0-9 (9 is a mine)
+let mines = [];         // 2D array: values: [y, x] (the coordinate of a mine)
+let revealed = [];      // 2D array: values: true, false (true has been revealed)
+let flaggedCells = [];  // 2D array: values: [y, x] (the coordinate of a flagged cell)
 
 // DOM objects
 let levelMenu, fieldDiv, timerDiv, mineCounter;
 let gameDiv, finalScreen, resultImg, scoreDiv, bestDiv, replayBtn;
-
-// TRANS[[]]: the translation matrix to get the eight surrounding cells
-const TRANS = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
-
-let mineField = [[], []];
-let revealed = [[], []];
-let flaggedCells = [];      // an array of flagged cells
 
 document.addEventListener("DOMContentLoaded", function() {
     bestScores = initBestScores();
@@ -43,15 +47,15 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 function startNewGame(event) {
-    setLevel();
+    setLevel(levelMenu.value);
     generateFieldDOM();
     timerDiv.textContent = '000';
     mineCounter.textContent = MINES_COUNT[level];
     finalScreen.style.display = 'none';
 }
 
-function setLevel() {
-    switch (levelMenu.value) {
+function setLevel(lvl) {
+    switch (lvl) {
         case 'easy':
             level = 0;
             break;
@@ -73,10 +77,12 @@ function setLevel() {
     if (timerId !== 0) {
         clearInterval(timerId);
     }
-    // generate a new mine field
+    
     revealed = resetRevealed(GRID_DIMS[level][1], GRID_DIMS[level][0]);
-    mineField = generateMines(GRID_DIMS[level][1], GRID_DIMS[level][0], MINES_COUNT[level]);
-    mineField = markMineSurroundings(mineField);
+    // generate a new set of mines
+    mines = generateMines(GRID_DIMS[level][1], GRID_DIMS[level][0], MINES_COUNT[level]);
+    // create a mine field
+    mineField = markMineSurroundings(generateMineField(GRID_DIMS[level][1], GRID_DIMS[level][0], mines));
 }
 
 function resetRevealed(width, height) {
@@ -87,32 +93,43 @@ function resetRevealed(width, height) {
     return r;
 }
 
+// generateMines(width, height, mc) => an array of mine coordinates to be planted.
+// width, height: dimensions of the mine field
+// mc: number of mines to be planted
+// return ms[[]]: the coordinates of the mines
 function generateMines(width, height, mc) {
-    // width, height: dimensions of the mine field
-    // mc: number of mines to be planted
-    // return mf[[]]: the mine field
-    const LAND = 0;
-    const MINE = 1;
-
-    let mf = [];
-    for (let i = 0; i < height; i++) {
-        mf[i] = Array(width).fill(LAND);
-    }
-
+    let ms = [];
     let counter = 0;
     while (counter < mc) {
         let index = Math.floor(Math.random() * height * width);
-        if (mf[Math.floor(index / width)][index % width] === LAND) {
-            mf[Math.floor(index / width)][index % width] = MINE;
+        let [y, x] = [Math.floor(index / width), index % width];
+        if (!ms.find(e => e[0] === y && e[1] === x)) {
+            ms.push([y, x]);
             counter++;
         }
+    }
+    return ms;
+}
+
+// generateMines(width, height, mc) => an array of mine coordinates to be planted.
+// width, height: dimensions of the mine field
+// ms[[]]: an array of mine coordinates to be planted
+// return mf[[]]: the mine field
+function generateMineField(width, height, ms) {
+    let mf = [];
+    for (let i = 0; i < height; i++) {
+        mf[i] = Array(width).fill(LAND_MARKER);
+    }
+
+    for (let i = 0; i < ms.length; i++) {
+        mf[ms[i][0]][ms[i][1]] = MINE_MARKER;
     }
     return mf;
 }
 
+// mf[[]]: a filled mine field
+// return target[[]]: mine field with mine surroundings marked
 function markMineSurroundings(mf) {
-    // mf[[]]: a filled mine field
-    // return target[[]]: mine field with mine surroundings marked
     let height = mf.length;
     let width = mf[0].length;
 
@@ -130,8 +147,8 @@ function markMineSurroundings(mf) {
 
     for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
-            if (mf[i][j] === 1) {
-                target[i][j] = 9;
+            if (mf[i][j] === MINE_MARKER) { // MINE_MARKER is assumed to be 9
+                target[i][j] = MINE_MARKER;
                 for (let k = 0; k < TRANS.length; k++) {
                     if (isValid(i + TRANS[k][0], j + TRANS[k][1])) {
                         target[i + TRANS[k][0]][j + TRANS[k][1]]++;
@@ -157,7 +174,6 @@ function generateFieldDOM() {
             cellDiv.setAttribute('data-index-y', i);
             cellDiv.setAttribute('data-index-x', j);
             cellDiv.classList.add('cell');
-            // cellDiv.classList.add(`size${level}`);
             if ((i + j) % 2 === 0) {
                 cellDiv.classList.add('even');
             } else {
@@ -188,13 +204,12 @@ function revealCell(e) {
             cascadeReveal(y, x);
         } else {
             // You lost!!!
-            finishRound(false);
+            revealMine(y, x);
+            shakeField(300);
+            window.setTimeout(finishRound, 300, false);
+            
         }
     }
-}
-
-function revealMines() {
-    // reveal mines after lost
 }
 
 function cascadeReveal(y, x) {
@@ -204,11 +219,10 @@ function cascadeReveal(y, x) {
     if (mineField[y][x] > 0) {
         cell.textContent = mineField[y][x];
         if (mineField[y][x] > 1) {
-            cell.classList.add(FONT_COLORS[mineField[y][x]]);
+            cell.classList.add(NUM_COLORS[mineField[y][x]]);
         }
     } else {
-        fieldDiv.classList.add('shake');
-        setTimeout(function(){ fieldDiv.classList.remove('shake') }, 300);
+        shakeField(300);
         for (let i = 0; i < TRANS.length; i++) {
             if (isExpandable(y + TRANS[i][0], x + TRANS[i][1])) {
                 cascadeReveal(y + TRANS[i][0], x + TRANS[i][1]);
@@ -223,6 +237,11 @@ function cascadeReveal(y, x) {
     }
 }
 
+function shakeField(duration) {
+    fieldDiv.classList.add('shake');
+    setTimeout(function(){ fieldDiv.classList.remove('shake') }, duration);
+}
+
 function flagCell(e) {
     e.preventDefault();
 
@@ -230,7 +249,6 @@ function flagCell(e) {
     let y = Number(this.dataset.indexY);
 
     if (revealed[y][x] === false) {
-        //let mineCounter = document.querySelector('#mine-count');
         if (this.classList.contains('flagged')) {
             this.classList.remove('flagged');
             flagsPlanted--;
@@ -242,13 +260,41 @@ function flagCell(e) {
             flaggedCells.push([y, x]);
             mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
             if (checkVictory()) {
-                // You won!!!
+                // Game won!!!
                 finishRound(true);
             }
         }
     }
     // should return false to prevent the default context menu
     return false;
+}
+
+function checkVictory() {
+    if (flagsPlanted === MINES_COUNT[level]) {
+        // check if all the coordinates stored in flaggedCells represent cell with mines
+        return flaggedCells.every(e => mineField[e[0]][e[1]] === 9)
+    }
+    return false;
+}
+
+function revealMine(y, x) {
+    let cell = document.querySelector(`[data-index-y='${y}'][data-index-x='${x}']`);
+    let colorIndex = Math.floor(Math.random() * MINE_COLORS.length);
+    cell.classList.add('mine');
+    cell.style.backgroundColor = MINE_COLORS[colorIndex][0];
+    cell.style.color = MINE_COLORS[colorIndex][1];
+    cell.textContent = '●';
+}
+
+function revealMines() {
+    let counter = 0;
+    let revealIntervalID = window.setInterval(function() {
+        revealMine(mines[counter][0], mines[counter][1]);
+        counter++;
+        if (counter === mines.length) {
+            clearInterval(revealIntervalID);
+        }
+    }, 2000 / mines.length);
 }
 
 function finishRound(won) {
@@ -261,27 +307,26 @@ function finishRound(won) {
             localStorage.setItem('minesweeperBestScores', JSON.stringify(bestScores));
         }
         bestDiv.textContent = ('00' + (bestScores[level])).slice(-3);
+        document.documentElement.style.setProperty('--gameWidth', `${gameDiv.offsetWidth}px`);
+        document.documentElement.style.setProperty('--gameHeight', `${gameDiv.offsetHeight}px`);
+        finalScreen.style.display = 'block';
     } else {
-        // TODO: reveal mines
         resultImg.setAttribute('src', './icons/lose_screen.png');
         scoreDiv.textContent = '— — —';
         bestDiv.textContent = bestScores[level] === 9999999 ? '— — —' : ('00' + (bestScores[level])).slice(-3);
+        document.documentElement.style.setProperty('--gameWidth', `${gameDiv.offsetWidth}px`);
+        document.documentElement.style.setProperty('--gameHeight', `${gameDiv.offsetHeight}px`);
+        
+        revealMines();
+        let timeoutID = window.setTimeout(function() {
+            finalScreen.style.display = 'block';
+        }, 2000);
     }
-    document.documentElement.style.setProperty('--gameWidth', `${gameDiv.offsetWidth}px`);
-    document.documentElement.style.setProperty('--gameHeight', `${gameDiv.offsetHeight}px`);
-    finalScreen.style.display = 'block';
-}
-
-function checkVictory() {
-    if (flagsPlanted === MINES_COUNT[level]) {
-        // check if all the coordinates stored in flaggedCells represent cell with mines
-        return flaggedCells.every(e => mineField[e[0]][e[1]] === 9)
-    }
-    return false;
+    
 }
 
 function isMine(mf, y, x) {
-    return mf[y][x] === 9 ? true : false;
+    return mf[y][x] === MINE_MARKER ? true : false;
 }
 
 function initBestScores() {

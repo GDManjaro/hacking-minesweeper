@@ -150,6 +150,11 @@ div.cell.flagged {
     background-size: contain;
 }
 
+div.cell.mine {
+    background-image: none;
+    font-size: var(--cellDim);
+}
+
 /* ************************************************** */
 
 #overlay {
