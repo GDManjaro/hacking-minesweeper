@@ -1,4 +1,4 @@
-# minesweeper
+# MINESWEEPER
 Minesweeper online game
 
 link: https://adlogi.github.io/minesweeper/
