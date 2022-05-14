@@ -46,6 +46,68 @@ document.addEventListener("DOMContentLoaded", function() {
     // showMines(mineField);
 });
 
+const hacks = {
+    flagCellByXY(x_coord, y_coord, includeRoundFinishing) {
+
+        let x = Number(x_coord);
+        let y = Number(y_coord);
+    
+        let cell = document.querySelector(`[data-index-y='${y}'][data-index-x='${x}']`)
+    
+        if (revealed[y][x] === false) {
+            if (cell.classList.contains('flagged')) {
+                cell.classList.remove('flagged');
+                flagsPlanted--;
+                flaggedCells.splice(flaggedCells.findIndex(c => c[0] === y && c[1] === x),1);
+                mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
+            } else {
+                cell.classList.add('flagged');
+                flagsPlanted++;
+                flaggedCells.push([y, x]);
+                mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
+                if (checkVictory()) {
+                    if (includeRoundFinishing) {
+                    // Game won!!!
+                    finishRound(true);}
+                }
+            }
+        }
+        // should return false to prevent the default context menu
+        return false;
+    },
+    flagCellByYX(y_coord, x_coord, includeRoundFinishing) {
+
+        let x = Number(x_coord);
+        let y = Number(y_coord);
+    
+        let cell = document.querySelector(`[data-index-y='${y}'][data-index-x='${x}']`)
+    
+        if (revealed[y][x] === false) {
+            if (cell.classList.contains('flagged')) {
+                cell.classList.remove('flagged');
+                flagsPlanted--;
+                flaggedCells.splice(flaggedCells.findIndex(c => c[0] === y && c[1] === x),1);
+                mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
+            } else {
+                cell.classList.add('flagged');
+                flagsPlanted++;
+                flaggedCells.push([y, x]);
+                mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
+                if (checkVictory()) {
+                    if (includeRoundFinishing) {
+                    // Game won!!!
+                    finishRound(true);}
+                }
+            }
+        }
+        // should return false to prevent the default context menu
+        return false;
+    },
+    flagAllMines(Win) {
+        
+    } 
+}
+
 function startNewGame(event) {
     setLevel(levelMenu.value);
     generateFieldDOM();
@@ -199,6 +261,7 @@ function revealCell(e) {
     }
     let x = Number(this.dataset.indexX);
     let y = Number(this.dataset.indexY);
+    console.log(`Reveal! X: ${x} Y: ${y}`)
     if (revealed[y][x] === false && !this.classList.contains('flagged')) {
         if (!isMine(mineField, y, x)) {
             cascadeReveal(y, x);
@@ -248,6 +311,8 @@ function flagCell(e) {
     let x = Number(this.dataset.indexX);
     let y = Number(this.dataset.indexY);
 
+    let cell = document.querySelector(`[data-index-y='${y}'][data-index-x='${x}']`)
+
     if (revealed[y][x] === false) {
         if (this.classList.contains('flagged')) {
             this.classList.remove('flagged');
@@ -255,7 +320,7 @@ function flagCell(e) {
             flaggedCells.splice(flaggedCells.findIndex(c => c[0] === y && c[1] === x),1);
             mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
         } else {
-            this.classList.add('flagged');
+            cell.classList.add('flagged');
             flagsPlanted++;
             flaggedCells.push([y, x]);
             mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
@@ -268,6 +333,65 @@ function flagCell(e) {
     // should return false to prevent the default context menu
     return false;
 }
+
+function flagCellByXY(x_coord, y_coord, includeRoundFinishing) {
+
+    let x = Number(x_coord);
+    let y = Number(y_coord);
+
+    let cell = document.querySelector(`[data-index-y='${y}'][data-index-x='${x}']`)
+
+    if (revealed[y][x] === false) {
+        if (cell.classList.contains('flagged')) {
+            cell.classList.remove('flagged');
+            flagsPlanted--;
+            flaggedCells.splice(flaggedCells.findIndex(c => c[0] === y && c[1] === x),1);
+            mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
+        } else {
+            cell.classList.add('flagged');
+            flagsPlanted++;
+            flaggedCells.push([y, x]);
+            mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
+            if (checkVictory()) {
+                if (includeRoundFinishing) {
+                // Game won!!!
+                finishRound(true);}
+            }
+        }
+    }
+    // should return false to prevent the default context menu
+    return false;
+}
+
+function flagCellByYX(y_coord, x_coord, includeRoundFinishing) {
+
+    let x = Number(x_coord);
+    let y = Number(y_coord);
+
+    let cell = document.querySelector(`[data-index-y='${y}'][data-index-x='${x}']`)
+
+    if (revealed[y][x] === false) {
+        if (cell.classList.contains('flagged')) {
+            cell.classList.remove('flagged');
+            flagsPlanted--;
+            flaggedCells.splice(flaggedCells.findIndex(c => c[0] === y && c[1] === x),1);
+            mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
+        } else {
+            cell.classList.add('flagged');
+            flagsPlanted++;
+            flaggedCells.push([y, x]);
+            mineCounter.textContent = MINES_COUNT[level] - flagsPlanted;
+            if (checkVictory()) {
+                if (includeRoundFinishing) {
+                // Game won!!!
+                finishRound(true);}
+            }
+        }
+    }
+    // should return false to prevent the default context menu
+    return false;
+}
+
 
 function checkVictory() {
     if (flagsPlanted === MINES_COUNT[level]) {
