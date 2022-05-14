@@ -1,8 +1,10 @@
-# MINESWEEPER
-Minesweeper Online Game
+# HACKING MINESWEEPER
+Hacking a Minesweeper Online Game
 
-link: https://adlogi.github.io/minesweeper/
+Sorry for a bad code, i am so bad at english and javascript
 
-I built this game as an excercise. I used Google's Minesweeper as a model.
+* Avaliable hacks
+    * Flag cell by XY/YX
 
-Abdulrahman Y. idlbi
+
+Thanks to Abdulrahman Y. idlbi
