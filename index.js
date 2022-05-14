@@ -104,7 +104,9 @@ const hacks = {
         return false;
     },
     flagAllMines(Win) {
-        
+        mines.forEach((m) => {
+            flagCellByYX(m[0], m[1], Win)
+        })
     } 
 }
 
