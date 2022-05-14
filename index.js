@@ -107,7 +107,42 @@ const hacks = {
         mines.forEach((m) => {
             flagCellByYX(m[0], m[1], Win)
         })
-    } 
+    },
+    revealCellByXY(x,y,loseIfMine) {
+        let cell = document.querySelector(`[data-index-y='${y}'][data-index-x='${x}']`)
+        if (revealed[y][x] === false && !cell.classList.contains('flagged')) {
+            if (!isMine(mineField, y, x)) {
+                cascadeReveal(y, x);
+            } else {
+                // You lost!!!
+                revealMine(y, x);
+                if (loseIfMine) {
+                    shakeField(300);
+                    window.setTimeout(finishRound, 300, false);
+                }
+                
+            }
+        }
+    },
+    revealCellByYX(y,x,loseIfMine) {
+        let cell = document.querySelector(`[data-index-y='${y}'][data-index-x='${x}']`)
+        if (revealed[y][x] === false && !cell.classList.contains('flagged')) {
+            if (!isMine(mineField, y, x)) {
+                cascadeReveal(y, x);
+            } else {
+                // You lost!!!
+                revealMine(y, x);
+                if (loseIfMine) {
+                    shakeField(300);
+                    window.setTimeout(finishRound, 300, false);
+                }
+                
+            }
+        }
+    },
+    newGame(lvl) {
+        setLevel(lvl)
+    }
 }
 
 function startNewGame(event) {
